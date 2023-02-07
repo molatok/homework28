@@ -17,9 +17,11 @@ urlpatterns = [
     path("category/create/", views.CategoryCreateView.as_view()),
     path("category/update/<int:pk>/", views.CategoryUpdateView.as_view()),
     path("category/delete/<int:pk>/", views.CategoryDeleteView.as_view()),
-    path("users/", views.UserView.as_view()),
+    path("users/", views.UsersView.as_view()),
     path("users/<int:pk>/", views.UserDetailView.as_view()),
     path("users/create/", views.UserCreateView.as_view()),
+    path("users/update/<int:pk>/", views.UserUpdateView.as_view()),
+    path("users/delete/<int:pk>/", views.UserDeleteView.as_view()),
 ]
 
 if settings.DEBUG:
