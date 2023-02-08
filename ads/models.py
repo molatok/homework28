@@ -1,5 +1,4 @@
 from django.db import models
-
 from user_directory.models import Users
 
 
@@ -16,19 +15,6 @@ class Categories(models.Model):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
-
-    def __str__(self):
-        return self.name
-
-
-class Location(models.Model):
-    name = models.CharField(max_length=100)
-    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    lng = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-
-    class Meta:
-        verbose_name = "Адрес"
-        verbose_name_plural = "Адреса"
 
     def __str__(self):
         return self.name
@@ -56,5 +42,7 @@ class Ads(models.Model):
 
     def __str__(self):
         return self.name
+
+
 
 

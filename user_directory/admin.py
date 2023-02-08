@@ -1,3 +1,5 @@
 from django.contrib import admin
+from user_directory.models import Users, Location
 
-# Register your models here.
+admin.site.register(Location)
+admin.site.register(Users)
