@@ -1,8 +1,11 @@
 from django.urls import path
+from rest_framework import routers
+
 from ads import views
 
+
 urlpatterns = [
-    path("ads/", views.AdsView.as_view()),
+    path("ads/", views.AdsListView.as_view()),
     path("ads/create/", views.AdCreateView.as_view()),
     path('ads/<int:pk>/', views.AdDetailView.as_view()),
     path('ads/<int:pk>/upload_image/', views.AdUpdateView.as_view()),

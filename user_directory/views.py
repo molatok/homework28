@@ -5,6 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, UpdateView, DeleteView
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView
+from rest_framework.viewsets import ModelViewSet
+
 from user_directory.models import Users, Location
 from user_directory.serializers import UserSerializers, LocationSerializers
 
@@ -60,26 +62,6 @@ class UserDeleteView(DeleteView):
         return JsonResponse({"Удаление": "Успешно"}, status=200)
 
 
-class LocationsView(ListAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializers
-
-
-class LocationDetailView(RetrieveAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializers
-
-
-class LocationCreateView(CreateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializers
-
-
-class LocationUpdateView(UpdateAPIView):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializers
-
-
-class LocationDeleteView(DestroyAPIView):
+class LocationsViewSet(ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializers

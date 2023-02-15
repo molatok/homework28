@@ -1,13 +1,13 @@
 import json
-
 from django.core.paginator import Paginator
-from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import UpdateView, DetailView, ListView, CreateView, DeleteView
+from rest_framework.generics import ListAPIView
 from ads.models import Ads, Categories
+from ads.serializers import AdsSerializers
 from djangoProject import settings
 
 
@@ -15,35 +15,16 @@ def home_page(request):
     return HttpResponse(200, {"status": "ok"})
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class AdsView(ListView):
-    model = Ads
+class AdsListView(ListAPIView):
     queryset = Ads.objects.all()
-    ordering = "price"
+    serializer_class = AdsSerializers
 
     def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
+        category = request.GET.getlist('cat', [])
+        if category:
+            self.queryset = self.queryset.filter(category_id__in=category)
 
-        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
-        page_number = request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-
-        ads = []
-        for ad in page_obj:
-            ads.append(
-                {
-                    "Название": ad.name,
-                    "Описание": ad.description,
-                    "price": ad.price,
-                }
-            )
-
-        response = {
-            "items": ads,
-            "num_pages": paginator.num_pages,
-            "total": paginator.count
-        }
-        return JsonResponse(response, safe=False)
+        return super.
 
 
 @method_decorator(csrf_exempt, name="dispatch")
