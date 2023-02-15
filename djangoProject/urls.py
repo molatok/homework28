@@ -6,6 +6,7 @@ from ads import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("test-api/", include('rest_framework.urls')),
     path("", views.home_page),
     path("", include('ads.urls')),
     path('', include('user_directory.urls')),

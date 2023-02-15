@@ -3,30 +3,15 @@ from django.db.models import Count
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-
+from django.views.generic import DetailView, UpdateView, DeleteView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, DestroyAPIView, UpdateAPIView
 from user_directory.models import Users, Location
+from user_directory.serializers import UserSerializers, LocationSerializers
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class UsersView(ListView):
-    model = Users
+class UsersView(ListAPIView):
     queryset = Users.objects.annotate(ad=Count("ads"))
-
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-        self.object_list = self.object_list.order_by("username")
-        users = []
-        for user in self.object_list:
-            users.append(
-                {
-                    "Имя": user.first_name,
-                    "Фамилия": user.last_name,
-                    "Логин": user.username,
-                    "opa": user.ad
-                }
-            )
-        return JsonResponse(users, safe=False)
+    serializer_class = UserSerializers
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -40,23 +25,9 @@ class UserDetailView(DetailView):
                              "Логин": user.username})
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserCreateView(CreateView):
-    model = Users
-    fields = ["first_name", "last_name", "username", "password", "age", "location"]
-
-    def post(self, request, *args, **kwargs):
-        user_data = json.loads(request.body)
-
-        user, _ = Users.objects.get_or_create(first_name=user_data["first_name"], last_name=user_data["last_name"],
-                                              username=user_data["username"], password=user_data["password"],
-                                              age=user_data["age"])
-        location, _ = Location.objects.get_or_create(name=user_data["location"])
-        user.location.add(location)
-
-        return JsonResponse({
-            "username": user.username,
-        })
+class UserCreateView(CreateAPIView):
+    queryset = Users.objects.all()
+    serializer_class = UserSerializers
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -87,3 +58,28 @@ class UserDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         super().delete(request, *args, **kwargs)
         return JsonResponse({"Удаление": "Успешно"}, status=200)
+
+
+class LocationsView(ListAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+
+
+class LocationDetailView(RetrieveAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+
+
+class LocationCreateView(CreateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+
+
+class LocationUpdateView(UpdateAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
+
+
+class LocationDeleteView(DestroyAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializers
