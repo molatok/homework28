@@ -1,5 +1,4 @@
 import json
-from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -8,7 +7,6 @@ from django.views.generic import UpdateView, DetailView, ListView, CreateView, D
 from rest_framework.generics import ListAPIView
 from ads.models import Ads, Categories
 from ads.serializers import AdsSerializers
-from djangoProject import settings
 
 
 def home_page(request):
@@ -24,7 +22,22 @@ class AdsListView(ListAPIView):
         if category:
             self.queryset = self.queryset.filter(category_id__in=category)
 
-        return super.
+        text = request.GET.get('text')
+        if text:
+            self.queryset = self.queryset.filter(name__icontains=text)
+
+        location = request.GET.get('location')
+        if location:
+            self.queryset = self.queryset.filter(user_id__location__name__icontains=location)
+
+        price_from = request.GET.get('price_from')
+        price_to = request.GET.get('price_to')
+        if price_from:
+            self.queryset = self.queryset.filter(price__gte=price_from)
+        if price_to:
+            self.queryset = self.queryset.filter(price__lte=price_to)
+
+        return super().get(self, *args, **kwargs)
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -151,5 +164,3 @@ class CategoryDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         super().delete(request, *args, **kwargs)
         return JsonResponse({"Удаление": "Успешно"}, status=200)
-
-
