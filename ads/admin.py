@@ -3,4 +3,5 @@ from ads.models import Categories, Ads
 
 admin.site.register(Categories)
 admin.site.register(Ads)
+#admin.site.register(Collection)
 

@@ -4,9 +4,13 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import UpdateView, DetailView, ListView, CreateView, DeleteView
-from rest_framework.generics import ListAPIView
-from ads.models import Ads, Categories
-from ads.serializers import AdsSerializers
+from rest_framework.generics import ListAPIView, UpdateAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
+from rest_framework.permissions import IsAuthenticated
+from ads.models import Ads, Categories, Collection
+from ads.serializers import AdsSerializers, CollectionSerializers, CollectionCreateSerializers, \
+    CollectionListSerializers, CollectionUpdateSerializers
+from user_directory.models import Users
+from user_directory.permission import IsOwnerOrAdmin
 
 
 def home_page(request):
@@ -40,17 +44,10 @@ class AdsListView(ListAPIView):
         return super().get(self, *args, **kwargs)
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class AdDetailView(DetailView):
-    model = Ads
-
-    def get(self, request, *args, **kwargs):
-        ad = self.get_object()
-        return JsonResponse({"статус": ad.status,
-                             "название": ad.name,
-                             "цена": ad.price,
-                             "описание": ad.description,
-                             "опубликовано?": ad.is_published})
+class AdDetailView(RetrieveAPIView):
+    queryset = Ads.objects.annotate()
+    serializer_class = AdsSerializers
+    permission_classes = [IsAuthenticated]
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -70,29 +67,16 @@ class AdCreateView(CreateView):
         }, safe=False)
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class AdUpdateView(UpdateView):
-    model = Ads
-    fields = ["status", "name", "user_id", "price", "description", "is_published", "image", "category"]
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.image = request.FILES["image"]
-        self.object.save()
-        return JsonResponse({
-            "name": self.object.name,
-            "image": self.object.image.url if self.object.image else None
-        })
+class AdUpdateView(UpdateAPIView):
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+    queryset = Ads.objects.all()
+    serializer_class = AdsSerializers
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AdDeleteView(DeleteView):
-    model = Ads
-    success_url = "/"
-
-    def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
-        return JsonResponse({"Удаление": "Успешно"}, status=200)
+class AdDeleteView(DestroyAPIView):
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
+    queryset = Ads.objects.all()
+    serializer_class = AdsSerializers
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -164,3 +148,28 @@ class CategoryDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         super().delete(request, *args, **kwargs)
         return JsonResponse({"Удаление": "Успешно"}, status=200)
+
+
+class CollectionView(ListAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionListSerializers
+
+
+class CollectionDetailView(RetrieveAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializers
+
+
+class CollectionCreateView(CreateAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionCreateSerializers
+
+
+class CollectionUpdateView(UpdateAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionUpdateSerializers
+
+
+class CollectionDeleteView(DestroyAPIView):
+    queryset = Collection.objects.all()
+    serializer_class = CollectionSerializers

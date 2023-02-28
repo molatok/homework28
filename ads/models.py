@@ -29,7 +29,7 @@ class Ads(models.Model):
 
     status = models.CharField(max_length=50, choices=STATUS, default='draft')
     name = models.CharField(max_length=50)
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, null=True)
     price = models.PositiveIntegerField()
     description = models.TextField(null=True)
     is_published = models.CharField(max_length=5)
@@ -44,5 +44,14 @@ class Ads(models.Model):
         return self.name
 
 
+class Collection(models.Model):
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="collections", null=True)
+    name = models.CharField(max_length=50, unique=True)
+    items = models.ManyToManyField(Ads)
 
+    class Meta:
+        verbose_name = "Пользовательская подборка"
+        verbose_name_plural = "Пользовательские подборки"
 
+    def __str__(self):
+        return self.name

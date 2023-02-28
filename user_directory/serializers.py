@@ -7,6 +7,14 @@ class UserSerializers(serializers.ModelSerializer):
         model = Users
         fields = '__all__'
 
+    def create(self, validated_data):
+        user = Users.objects.create(**validated_data)
+
+        user.set_password(validated_data["password"])
+        user.save()
+
+        return user
+
 
 class LocationSerializers(serializers.ModelSerializer):
     class Meta:
