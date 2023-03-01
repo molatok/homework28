@@ -161,4 +161,4 @@ class CollectionUpdateView(UpdateAPIView):
 class CollectionDeleteView(DestroyAPIView):
     queryset = Collection.objects.all()
     serializer_class = CollectionSerializers
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsOwnerOrAdmin]
