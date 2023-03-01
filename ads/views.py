@@ -1,6 +1,5 @@
 import json
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import UpdateView, DetailView, ListView, CreateView, DeleteView
@@ -9,8 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from ads.models import Ads, Categories, Collection
 from ads.serializers import AdsSerializers, CollectionSerializers, CollectionCreateSerializers, \
     CollectionListSerializers, CollectionUpdateSerializers
-from user_directory.models import Users
-from user_directory.permission import IsOwnerOrAdmin
+from user_directory.permissions import IsOwnerOrAdmin, IsOwner
 
 
 def home_page(request):
@@ -50,21 +48,10 @@ class AdDetailView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AdCreateView(CreateView):
-    model = Ads
-    fields = ["name", "price", "author", "description", "is_published", "category", "user_id"]
-
-    def post(self, request, *args, **kwargs):
-        ad_data = json.loads(request.body)
-        category = get_object_or_404(Categories, id=ad_data["category"])
-        user_id = get_object_or_404(Users, id=ad_data["user_id"])
-        ad, _ = Ads.objects.get_or_create(name=ad_data["name"], price=ad_data["price"],
-                                          description=ad_data["description"],
-                                          is_published=ad_data["is_published"], category=category, user_id=user_id)
-        return JsonResponse({
-            "name": ad.name,
-        }, safe=False)
+class AdCreateView(CreateAPIView):
+    queryset = Ads.objects.annotate()
+    serializer_class = AdsSerializers
+    permission_classes = [IsAuthenticated]
 
 
 class AdUpdateView(UpdateAPIView):
@@ -168,8 +155,10 @@ class CollectionCreateView(CreateAPIView):
 class CollectionUpdateView(UpdateAPIView):
     queryset = Collection.objects.all()
     serializer_class = CollectionUpdateSerializers
+    permission_classes = [IsAuthenticated, IsOwner]
 
 
 class CollectionDeleteView(DestroyAPIView):
     queryset = Collection.objects.all()
     serializer_class = CollectionSerializers
+    permission_classes = [IsAuthenticated, IsOwner]

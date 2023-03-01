@@ -29,7 +29,7 @@ class Ads(models.Model):
 
     status = models.CharField(max_length=50, choices=STATUS, default='draft')
     name = models.CharField(max_length=50)
-    user = models.ForeignKey(Users, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)
     price = models.PositiveIntegerField()
     description = models.TextField(null=True)
     is_published = models.CharField(max_length=5)

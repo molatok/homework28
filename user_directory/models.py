@@ -23,8 +23,6 @@ class Users(AbstractUser):
 
     ROLE = [(ADMIN, ADMIN), (USER, USER), (MODERATOR, MODERATOR)]
 
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
     role = models.CharField(max_length=10, choices=ROLE, default=USER)
     age = models.PositiveIntegerField(null=True)
     location = models.ManyToManyField(Location, null=True)
