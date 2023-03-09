@@ -1,5 +1,7 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from user_directory.validators import check_user_email
 
 
 class Location(models.Model):
@@ -24,8 +26,9 @@ class Users(AbstractUser):
     ROLE = [(ADMIN, ADMIN), (USER, USER), (MODERATOR, MODERATOR)]
 
     role = models.CharField(max_length=10, choices=ROLE, default=USER)
-    age = models.PositiveIntegerField(null=True)
+    age = models.PositiveIntegerField(null=False, validators=[MinValueValidator(9)])
     location = models.ManyToManyField(Location, null=True)
+    email = models.EmailField(unique=True, validators=[check_user_email])
 
     class Meta:
         verbose_name = "Пользователь"

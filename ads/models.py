@@ -1,5 +1,7 @@
+from django.core.validators import MinLengthValidator, MinValueValidator
 from django.db import models
 from user_directory.models import Users
+from .validators import *
 
 
 class Categories(models.Model):
@@ -9,8 +11,9 @@ class Categories(models.Model):
         ('closed', 'Закрытая категория')
     ]
 
-    status = models.CharField(max_length=30, choices=STATUS, default='draft')
-    name = models.CharField(max_length=50)
+    status = models.CharField(max_length=10, choices=STATUS, default='draft')
+    name = models.CharField(max_length=20)
+    slug = models.CharField(validators=[MinLengthValidator(10)], max_length=50, unique=True)
 
     class Meta:
         verbose_name = "Категория"
@@ -28,11 +31,11 @@ class Ads(models.Model):
     ]
 
     status = models.CharField(max_length=50, choices=STATUS, default='draft')
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, validators=[MinLengthValidator(10)], null=False)
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
-    price = models.PositiveIntegerField()
-    description = models.TextField(null=True)
-    is_published = models.CharField(max_length=5)
+    price = models.PositiveIntegerField(validators=[MinValueValidator(0)])
+    description = models.TextField(null=False)
+    is_published = models.CharField(max_length=5, validators=[check_published_status])
     image = models.ImageField(upload_to="images/", null=True)
     category = models.ForeignKey(Categories, on_delete=models.CASCADE, null=True)
 

@@ -6,8 +6,7 @@ from django.views.generic import UpdateView, DetailView, ListView, CreateView, D
 from rest_framework.generics import ListAPIView, UpdateAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from ads.models import Ads, Categories, Collection
-from ads.serializers import AdsSerializers, CollectionSerializers, CollectionCreateSerializers, \
-    CollectionListSerializers, CollectionUpdateSerializers
+from ads.serializers import AdsSerializers, CollectionSerializers, CollectionCreateSerializers, CollectionListSerializers, CollectionUpdateSerializers
 from user_directory.permissions import IsOwnerOrAdmin, IsOwner
 
 
