@@ -32,12 +32,12 @@ class Ads(models.Model):
 
     status = models.CharField(max_length=50, choices=STATUS, default='draft')
     name = models.CharField(max_length=50, validators=[MinLengthValidator(10)], null=False)
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user = models.ForeignKey(Users, on_delete=models.CASCADE, null=True)
     price = models.PositiveIntegerField(validators=[MinValueValidator(0)])
     description = models.TextField(null=False)
     is_published = models.CharField(max_length=5, validators=[check_published_status])
     image = models.ImageField(upload_to="images/", null=True)
-    category = models.ForeignKey(Categories, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Categories, on_delete=models.CASCADE, null=True, default=None)
 
     class Meta:
         verbose_name = "Объявление"
@@ -49,7 +49,7 @@ class Ads(models.Model):
 
 class Collection(models.Model):
     user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="collections", null=True)
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=300, unique=True)
     items = models.ManyToManyField(Ads)
 
     class Meta:
