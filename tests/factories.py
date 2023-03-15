@@ -27,7 +27,7 @@ class CollectionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Collection
 
-    name = factory.Faker("word"),
+    name = factory.Faker("name"),
     items: [1, 2, 4]
 
 
