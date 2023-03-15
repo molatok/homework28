@@ -26,6 +26,7 @@ class AdFactory(factory.django.DjangoModelFactory):
 class CollectionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Collection
+        django_get_or_create = ('name',)
 
     name = factory.Faker("name"),
     items: [1, 2, 4]
